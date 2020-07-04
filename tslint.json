@@ -14,6 +14,26 @@
     "no-consecutive-blank-lines": false,
     "object-literal-sort-keys": false,
     "ordered-imports": false,
-    "quotemark": [true, "single"]
+    "quotemark": [true, "single"],
+    "semicolon": [
+      false,
+      false
+    ],
+    "no-console": [  
+      false  
+    ],
+    "space-before-function-paren": [
+      false
+    ],
+    "trailing-comma": [true, {
+      "singleline": "never",
+      "multiline": {
+        "objects": "ignore",
+        "arrays": "ignore",
+        "functions": "ignore",
+        "typeLiterals": "ignore"
+      }
+    }],
+    "max-classes-per-file":false
   }
 }
