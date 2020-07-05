@@ -26,6 +26,8 @@ module.exports = {
         "no-unused-vars": 0,
         "comma-dangle": [0, 0],
         "semi": [2, "always"],
-        "quotes": [2, "single"]
+        "quotes": [2, "single"],
+        "no-eval": 1,
+        "no-implied-eval": 1
     }
 };

@@ -1,20 +1,42 @@
 <template>
   <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+    <div id="nav">
+      <router-link to="/" :replace="false">Home</router-link> |
+      <router-link to="/about" v-if="replace" :replace="true">About replace: {{replace}}</router-link>
+      <router-link to="/about" v-if="!replace" :replace="false">About replace: {{replace}}</router-link>
+      <button @click="replace = !replace">切换</button>
+    </div>
+    <router-view/>
   </div>
 </template>
 
-<script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import HelloWorld from './components/HelloWorld.vue';
-
-@Component({
-  components: {
-    HelloWorld,
+<script>
+import chooRouter from './plugin/choo-router'
+export default {
+  data() {
+    return {
+      replace: false
+    }
   },
-})
-export default class App extends Vue {}
+  created () {
+    console.log(this)
+  },
+  watch: {
+    "$chooRouter.direction": {
+      immediate: true,
+      handler (v) {
+        console.log(v, '=====direction')
+      }
+    },
+    "$route": {
+      deep: true,
+      immediate: true,
+      handler () {
+        console.log(chooRouter.getCache())
+      }
+    }
+  }
+}
 </script>
 
 <style>
@@ -24,6 +46,18 @@ export default class App extends Vue {}
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+}
+
+#nav {
+  padding: 30px;
+}
+
+#nav a {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+#nav a.router-link-exact-active {
+  color: #42b983;
 }
 </style>

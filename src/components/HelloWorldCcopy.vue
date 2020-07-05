@@ -27,56 +27,15 @@
       <li><a href="https://vue-loader.vuejs.org" target="_blank" rel="noopener">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">awesome-vue</a></li>
     </ul>
-    <HelloWorldCopy></HelloWorldCopy>
-    <abc crk='c555666'></abc>
-    <slot></slot>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import v from 'vue'
-import HelloWorldCopy from './HelloWorldCcopy.vue'
 
-@Component({
-  components: {
-    HelloWorldCopy,
-    abc: {
-      updated () {
-      },
-      components: {
-        BBB: {
-          data() {
-            return {
-              ccc: 'ccc'
-            }
-          },
-          render(h) {
-            return h(
-              'p',
-              {},
-              [
-                '略略略'
-              ],
-            )
-          }
-        }
-      },
-      render(h) {
-        return h('p', {}, ['3333', h('BBB', {attrs: {crk: 'ddss'}})])
-      }
-    }
-  }
-})
+@Component
 export default class HelloWorld extends Vue {
-  @Prop() private msg!: string
-
-  d: string = 'ddddsssss'
-  ddd: string = 'bbbb'
-
-  // created() {
-    // console.log(this, '===========a222223333')
-  // }
+  @Prop() private msg!: string;
 }
 </script>
 

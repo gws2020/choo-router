@@ -34,6 +34,7 @@
         "typeLiterals": "ignore"
       }
     }],
-    "max-classes-per-file":false
+    "max-classes-per-file":false,
+    "no-eval": false
   }
 }
