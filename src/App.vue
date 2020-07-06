@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import chooRouter from './plugin/choo-router'
+import chooRouter from '..'
 export default {
   data() {
     return {
@@ -22,17 +22,17 @@ export default {
     console.log(this)
   },
   watch: {
-    '$chooRouter.direction': {
-      immediate: true,
-      handler (v) {
-        console.log(v, '=====direction')
-      }
-    },
+    // '$chooRouter.direction': {
+    //   immediate: true,
+    //   handler (v) {
+    //     console.log(v, '=====direction')
+    //   }
+    // },
     '$route': {
       deep: true,
       immediate: true,
       handler () {
-        console.log(chooRouter.getCache())
+        console.log(this, '===444')
       }
     }
   }

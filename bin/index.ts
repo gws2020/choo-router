@@ -19,7 +19,7 @@ interface CacheComponent {
 
 class ChooRouter implements PluginObject<InitOptions> {
 
-  private static setComponentCache(parentData: CacheComponent, rootComponent: Vue, key: string) {
+  private static setComponentCache(parentData: CacheComponent, rootComponent: Vue, key: string): void {
     rootComponent.$children.forEach((components: Vue) => {
       const keys: string = components.$attrs[key]
       if (keys) {
@@ -59,9 +59,9 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   private keyList: string[] = []
   private data: any = {}
-  private route: ChooRoute = new ChooRoute()
+  private route: any = ChooRoute
 
-  public getCache () {
+  public getCache (): {} {
     return this.data
   }
 
@@ -72,12 +72,12 @@ class ChooRouter implements PluginObject<InitOptions> {
     if (!router) {
       throw(new Error('router 为必要参数'))
     }
-    if (!(router instanceof VueRouter)) {
+    if (!router) {
       throw(new Error('router 必须为 VueRouter 实例'))
     }
 
     this.router = router
-
+    console.log(this.route.$data, '====this.route.$data')
     Object.defineProperty(Vue.prototype, '$chooRouter', {
       get: () => this.route.$data
     })
@@ -174,7 +174,7 @@ class ChooRouter implements PluginObject<InitOptions> {
         route.direction = Direction.back
       } else {
         if ( from.name === null ) {
-          route.direction = Direction.create
+          route.direction = Direction.enter
           keyList.push(toKeys)
         } else {
           route.direction = Direction.forward

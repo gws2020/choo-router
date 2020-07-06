@@ -1,28 +1,53 @@
 {
   "name": "choo-router",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "private": true,
+  "description": "## Project setup ``` yarn install ```",
+  "main": "dist/index.js",
+  "typings": "types/index.d.ts",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "build": "webpack --env.entry=./bin/index.ts --config webpack.conf.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gws267/choo-router.git"
+  },
+  "keywords": [
+    "vue",
+    "vue-router",
+    "choo",
+    "choo-router"
+  ],
+  "author": "龚文硕",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/gws267/choo-router/issues"
+  },
+  "homepage": "https://github.com/gws267/choo-router#readme",
   "dependencies": {
     "core-js": "^3.6.5",
+    "clean-webpack-plugin": "^3.0.0",
     "string-random": "^0.1.3",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
-    "vue-property-decorator": "^8.4.2",
+    "vue-property-decorator": "^9.0.0",
     "vue-router": "^3.2.0",
     "vuex": "^3.4.0"
   },
   "devDependencies": {
-    "@vue/cli-plugin-babel": "^4.4.0",
-    "@vue/cli-plugin-typescript": "^4.4.0",
-    "@vue/cli-service": "^4.4.0",
-    "eslint-config-168": "^0.0.8",
+    "@types/node": "^14.0.12",
+    "@typescript-eslint/eslint-plugin": "^3.2.0",
+    "@typescript-eslint/parser": "^3.2.0",
+    "@vue/cli-plugin-babel": "~4.4.0",
+    "@vue/cli-plugin-router": "~4.4.0",
+    "@vue/cli-plugin-typescript": "~4.4.0",
+    "@vue/cli-plugin-vuex": "~4.4.0",
+    "@vue/cli-service": "~4.4.0",
     "typescript": "~3.9.3",
-    "vue-template-compiler": "^2.6.11"
+    "vue-template-compiler": "^2.6.11",
+    "webpack-cli": "^3.3.12"
   },
   "browserslist": [
     "> 1%",
