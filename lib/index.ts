@@ -39,6 +39,7 @@ class ChooRouter implements PluginObject<InitOptions> {
     const hookData: {} = {}
 
     Object.assign(
+      Object.keys(this.$data).length ? this.$data : this,
       hookData,
       dataFun ? dataFun.call(this) : {},
       cacheFun ? (
@@ -46,10 +47,6 @@ class ChooRouter implements PluginObject<InitOptions> {
       ) : data.data
     )
 
-    Object.assign(
-      Object.keys(this.$data).length ? this.$data : this,
-      hookData
-    )
     this.$children.forEach((components: Vue) => {
       let componentData: CacheComponent | undefined
       componentData = data.component[keys]
