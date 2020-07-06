@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import chooRouter from '../lib'
+import chooRouter from '..'
 export default {
   data() {
     return {

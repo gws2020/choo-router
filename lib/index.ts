@@ -272,7 +272,7 @@ class ChooRouter implements PluginObject<InitOptions> {
         })
         next()
       } else {
-        if (to.path === from.path) {
+        if (to.path !== from.path) {
           return next()
         }
         to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
@@ -316,9 +316,6 @@ class ChooRouter implements PluginObject<InitOptions> {
           } else if (!(prototype.created instanceof Array)) {
             prototype.created = [prototype.created]
           }
-          if (prototype.created[0] && prototype.created[0].name === '_CHOO_ROUTER_CREATE_') {
-            prototype.created.splice(0, 1)
-          }
           prototype.created.splice(0, 0, this.routerCreateHook(data!))
         } else {
           const children = item!.$children || [];
@@ -338,13 +335,19 @@ class ChooRouter implements PluginObject<InitOptions> {
   private routerCreateHook(cache: CacheComponent, root: boolean = false): () => void {
     const self = this
     const { opt: { key } } = this
-    return function _CHOO_ROUTER_CREATE_ (this: Vue): void {
+    const _CHOO_ROUTER_CREATE_ = function (this: Vue): void {
       const keys = this.$attrs[key];
-      Vue.nextTick(() => {
+      this.$nextTick(() => {
         const created = (this.$options as any).__proto__.created
-        if (created && created[0] && created[0].name === '_CHOO_ROUTER_CREATE_') {
-          created.splice(0, 1)
-        }
+        const indexs: number[] = []
+        created.forEach((fun: () => void, index: number) => {
+          if ((fun as any).names === '_CHOO_ROUTER_CREATE_') {
+            indexs.splice(0, 0, index)
+          }
+        })
+        indexs.forEach((index: number) => {
+          created.splice(index, 1)
+        })
       })
       if (root) {
         Object.assign(Object.keys(this.$data).length ? this.$data : this, cache.data)
@@ -355,6 +358,8 @@ class ChooRouter implements PluginObject<InitOptions> {
       }
       (this.$children as any) = new ChooChildrenArray<Vue>(self.setCreate(root ? cache : cache.component[keys]))
     }
+    _CHOO_ROUTER_CREATE_.names = '_CHOO_ROUTER_CREATE_'
+    return _CHOO_ROUTER_CREATE_
   }
 
 }

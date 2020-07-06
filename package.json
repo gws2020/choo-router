@@ -32,7 +32,6 @@
   },
   "homepage": "https://github.com/gws267/choo-router#readme",
   "dependencies": {
-    "choo-router": "^1.0.0",
     "core-js": "^3.6.5",
     "string-random": "^0.1.3",
     "vue": "^2.6.11",
