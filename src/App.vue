@@ -23,7 +23,7 @@ export default {
       immediate: true,
       deep: true,
       handler ({replace, direction}) {
-        console.log(replace, direction)
+        console.log(`replace: ${replace}, direction: ${direction}`)
       }
     }
   }

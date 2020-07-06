@@ -133,13 +133,13 @@ class ChooRouter implements PluginObject<InitOptions> {
       const query: { [ key: string ]: any } = to.query
       const keys: string = query[key]
       if (!keys) {
-        const one: boolean = from.name === null
+        const root: boolean = from.name === null
         const newQuery: { [ key: string ]: any } = Object.assign({}, query)
         newQuery[key] = random(8)
         next({
           path: to.path,
           query: newQuery,
-          replace: one || this.route.replace
+          replace: root || this.route.replace
         })
       } else {
         next()
@@ -263,10 +263,6 @@ class ChooRouter implements PluginObject<InitOptions> {
                     } else if (!(prototype.created instanceof Array)) {
                       prototype.created = [prototype.created]
                     }
-                    if (prototype.created[0] && prototype.created[0].name === '_CHOO_ROUTER_CREATE_') {
-                      prototype.created.splice(0, 1)
-                    }
-
                     prototype.created.splice(0, 0, this.routerCreateHook(matchedData, true));
                   }
                 }
@@ -275,9 +271,6 @@ class ChooRouter implements PluginObject<InitOptions> {
           })
         })
       } else {
-        if (to.path !== from.path) {
-          return next()
-        }
         to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
           const instancesList: string[] = Object.keys(matched.instances)
           const instances: {[key: string]: Vue} = matched.instances
@@ -297,6 +290,7 @@ class ChooRouter implements PluginObject<InitOptions> {
             })
           });
         })
+        next()
       }
       next()
     }
@@ -338,19 +332,25 @@ class ChooRouter implements PluginObject<InitOptions> {
     }
   }
 
-  private routerCreateHook(cache: CacheComponent, one: boolean = false): () => void {
+  private routerCreateHook(cache: CacheComponent, root: boolean = false): () => void {
     const self = this
     const { opt: { key } } = this
     return function _CHOO_ROUTER_CREATE_ (this: Vue): void {
-      const keys = this.$attrs[key]
-      if (one) {
+      const keys = this.$attrs[key];
+      Vue.nextTick(() => {
+        const created = (this.$options as any).__proto__.created
+        if (created && created[0] && created[0].name === '_CHOO_ROUTER_CREATE_') {
+          created.splice(0, 1)
+        }
+      })
+      if (root) {
         Object.assign(Object.keys(this.$data).length ? this.$data : this, cache.data)
       } else if (keys && cache && cache.component[keys]) {
         Object.assign(Object.keys(this.$data).length ? this.$data : this, cache.component[keys].data)
       } else {
         return
       }
-      (this.$children as any) = new ChooChildrenArray<Vue>(self.setCreate(one ? cache : cache.component[keys]))
+      (this.$children as any) = new ChooChildrenArray<Vue>(self.setCreate(root ? cache : cache.component[keys]))
     }
   }
 
