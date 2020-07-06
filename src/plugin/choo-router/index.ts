@@ -2,7 +2,6 @@ import random from 'string-random'
 import Vue, { PluginObject, PluginFunction } from 'vue'
 import VueRouter, { Route, NavigationGuardNext, RouteRecord, RawLocation, NavigationGuard } from 'vue-router'
 import ChooRoute, { Direction } from './route'
-import { component } from 'vue/types/umd'
 
 class InitOptions {
   public router!: VueRouter
