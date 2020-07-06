@@ -33,10 +33,16 @@ class ChooRouter implements PluginObject<InitOptions> {
   }
 
   private static resetComponentData(this: Vue, data?: CacheComponent, key?: string) {
-    const dataFun = (this.$options as any).__proto__.data
+    const dataFun: () => void = (this.$options as any).__proto__.data
+    const cacheFun: (data: {}) => boolean = (this.$options as any).__proto__.cache
+    let cacheStatus: boolean = true
+    if (data && cacheFun) {
+      cacheStatus = cacheFun.call(this, data.data)
+      cacheStatus = cacheStatus !== false
+    }
     Object.assign(
       Object.keys(this.$data).length ? this.$data : this,
-      data ? data.data : (
+      data && cacheStatus ? data.data : (
         dataFun ? dataFun.call(this) : {}
       )
     )
@@ -335,10 +341,16 @@ class ChooRouter implements PluginObject<InitOptions> {
   private routerCreateHook(cache: CacheComponent, root: boolean = false): () => void {
     const self = this
     const { opt: { key } } = this
-    const _CHOO_ROUTER_CREATE_ = async function (this: Vue): Promise<any> {
-      const keys = this.$attrs[key];
+    const _CHOO_ROUTER_CREATE_ = function (this: Vue): void {
+      const keys = this.$attrs[key]
+      const cacheFun: (data: {}) => boolean = (this.$options as any).__proto__.cache
+      let cacheStatus: boolean = true
+      if (cacheFun && (root || keys)) {
+        cacheStatus = cacheFun.call(this, cache.data)
+        cacheStatus = cacheStatus !== false
+      }
       this.$nextTick(() => {
-        const created = (this.$options as any).__proto__.created
+        const created: Array<() => void> = (this.$options as any).__proto__.created
         const indexs: number[] = []
         created.forEach((fun: () => void, index: number) => {
           if ((fun as any).names === '_CHOO_ROUTER_CREATE_') {
@@ -349,11 +361,10 @@ class ChooRouter implements PluginObject<InitOptions> {
           created.splice(index, 1)
         })
       })
-      let hookData: {}
       if (root) {
-        Object.assign(Object.keys(this.$data).length ? this.$data : this, cache.data)
+        Object.assign(Object.keys(this.$data).length ? this.$data : this, cacheStatus ? cache.data : {})
       } else if (keys && cache && cache.component[keys]) {
-        Object.assign(Object.keys(this.$data).length ? this.$data : this, cache.component[keys].data)
+        Object.assign(Object.keys(this.$data).length ? this.$data : this, cacheStatus ? cache.component[keys].data : {})
       } else {
         return
       }

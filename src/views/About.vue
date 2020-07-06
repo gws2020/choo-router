@@ -10,8 +10,7 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
   cache: (data: {}) => true
 })
 export default class About extends Vue {
-  cache() {}
-  created () {
+  public created () {
     console.log(this)
   }
 }
