@@ -36,15 +36,14 @@ class ChooRouter implements PluginObject<InitOptions> {
     const dataFun: () => void = (this.$options as any).__proto__.data
     const cacheFun: (data: {} | null) => {} | any = (this.$options as any).__proto__.cache
     const keys: string | undefined = key ? this.$attrs[key] : key
-    const hookData: {} = {}
-    let cacheData: {} | null = data
+    let cacheData: {} | null = data.data
     if (example.route.direction !== Direction.back) {
       cacheData = null
     }
     Object.assign(
       Object.keys(this.$data).length ? this.$data : this,
-      hookData,
       dataFun ? dataFun.call(this) : {},
+      cacheData || {},
       root || keys ? (
         cacheFun ? (
           cacheFun.call(this, cacheData) || cacheData
