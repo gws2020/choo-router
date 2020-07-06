@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import chooRouter from '../lib'
+import chooRouter from '..'
 export default {
   data() {
     return {
@@ -19,11 +19,12 @@ export default {
     }
   },
   watch: {
-    $chooRouter: {
+    $route: {
       immediate: true,
       deep: true,
-      handler ({replace, direction}) {
-        console.log(`replace: ${replace}, direction: ${direction}`)
+      handler () {
+        const {replace, direction} = this.$chooRouter
+        console.log(`replace: ${replace}, direction: ${direction}`, chooRouter.getCache())
       }
     }
   }

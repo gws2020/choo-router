@@ -1,7 +1,7 @@
 import { Direction } from '../lib/route'
 declare module "vue/types/options" {
   interface ComponentOptions<V extends Vue> {
-    cache?: (data: {}) => boolean
+    cache?: (data: {}) => {[key: string]: any} | undefined
   }
 }
 

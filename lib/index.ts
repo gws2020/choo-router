@@ -32,31 +32,28 @@ class ChooRouter implements PluginObject<InitOptions> {
     })
   }
 
-  private static resetComponentData(this: Vue, data?: CacheComponent, key?: string) {
+  private static resetComponentData(this: Vue, data: CacheComponent, key: string) {
     const dataFun: () => void = (this.$options as any).__proto__.data
-    const cacheFun: (data: {}) => boolean = (this.$options as any).__proto__.cache
-    let cacheStatus: boolean = true
-    if (data && cacheFun) {
-      cacheStatus = cacheFun.call(this, data.data)
-      cacheStatus = cacheStatus !== false
-    }
+    const cacheFun: (data: {}) => {} | any = (this.$options as any).__proto__.cache
+    const keys: string | undefined = key ? this.$attrs[key] : key
+    const hookData: {} = {}
+
+    Object.assign(
+      hookData,
+      dataFun ? dataFun.call(this) : {},
+      cacheFun ? (
+        cacheFun.call(this, data.data) || data.data
+      ) : data.data
+    )
+
     Object.assign(
       Object.keys(this.$data).length ? this.$data : this,
-      data && cacheStatus ? data.data : (
-        dataFun ? dataFun.call(this) : {}
-      )
+      hookData
     )
     this.$children.forEach((components: Vue) => {
       let componentData: CacheComponent | undefined
-      if (data) {
-        const keys: string = components.$attrs[key!]
-        componentData = data.component[keys]
-        if (keys) {
-          ChooRouter.resetComponentData.call(components, componentData, key)
-        }
-      } else {
-        ChooRouter.resetComponentData.call(components)
-      }
+      componentData = data.component[keys]
+      ChooRouter.resetComponentData.call(components, componentData || { data: {}, component: {} }, key)
     })
   }
 
@@ -141,7 +138,7 @@ class ChooRouter implements PluginObject<InitOptions> {
       if (!keys) {
         const root: boolean = from.name === null
         const newQuery: { [ key: string ]: any } = Object.assign({}, query)
-        newQuery[key] = random(8)
+        newQuery[key] = random(6)
         next({
           path: to.path,
           query: newQuery,
@@ -215,11 +212,18 @@ class ChooRouter implements PluginObject<InitOptions> {
             ChooRouter.setComponentCache(matchedData[instancesKey], instances, key)
 
             if ( to.path === from.path ) {
-              ChooRouter.resetComponentData.call(instances)
+              ChooRouter.resetComponentData.call(instances, {data: {}, component: {}}, key)
             }
           }
         })
-
+      } else if (route.replace && to.path === from.path) {
+        from.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
+          const matchedKey: string[] = Object.keys(matched.instances)
+          for (const instancesKey of matchedKey) {
+            const instances: Vue = matched.instances[instancesKey]
+            ChooRouter.resetComponentData.call(instances, {data: {}, component: {}}, key)
+          }
+        })
       }
 
       next()
@@ -236,53 +240,9 @@ class ChooRouter implements PluginObject<InitOptions> {
       next: NavigationGuardNext
     ): void => {
       const { direction } = route
-      if (direction === Direction.back) {
-        const query: { [ key: string ]: any } = to.query
-        const keys: string = query[key]
-        const rootData = data[keys]
+      if (direction !== Direction.back) {
         to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
-          const instancesList: string[] = Object.keys(matched.instances)
-          instancesList.forEach((instancesKey: string) => {
-            const matchedData: CacheComponent = rootData ?
-              rootData[matchedIndex][instancesKey] :
-              {
-                data: {},
-                component: {}
-              }
-            let instances: Vue | undefined = matched.instances[instancesKey]
-            if (instances !== undefined) {
-              const children = instances.$children;
-              (instances.$children as any) = new ChooChildrenArray<Vue>(this.setCreate(matchedData))
-              children.forEach((item: Vue) => {
-                instances!.$children.push(item)
-              })
-              ChooRouter.resetComponentData.call(instances, matchedData, key)
-            } else {
-              Object.defineProperty(matched.instances, instancesKey, {
-                get: () => instances,
-                set: (val?: Vue) => {
-                  instances = val
-                  if (instances) {
-                    const prototype: any = (instances.$options as any).__proto__
-                    if (!prototype.created) {
-                      prototype.created = []
-                    } else if (!(prototype.created instanceof Array)) {
-                      prototype.created = [prototype.created]
-                    }
-                    prototype.created.splice(0, 0, this.routerCreateHook(matchedData, true));
-                  }
-                }
-              })
-            }
-          })
-        })
-        next()
-      } else {
-        if (to.path !== from.path) {
-          return next()
-        }
-        to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
-          const instancesList: string[] = Object.keys(matched.instances)
+          const instancesList: string[] = Object.keys(matched.components)
           const instances: {[key: string]: Vue} = matched.instances
           matched.instances = {}
           instancesList.forEach((instancesKey: string) => {
@@ -291,7 +251,7 @@ class ChooRouter implements PluginObject<InitOptions> {
         })
 
         from.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
-          const instancesList: string[] = Object.keys(matched.instances)
+          const instancesList: string[] = Object.keys(matched.components)
           instancesList.forEach((instancesKey: string) => {
             const children = matched.instances[instancesKey].$children;
             (matched.instances[instancesKey].$children as Vue[]) = []
@@ -300,8 +260,47 @@ class ChooRouter implements PluginObject<InitOptions> {
             })
           });
         })
-        next()
       }
+      const query: { [ key: string ]: any } = to.query
+      const keys: string = query[key]
+      const rootData = data[keys]
+      to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
+        const instancesList: string[] = Object.keys(matched.components)
+        instancesList.forEach((instancesKey: string) => {
+          const matchedData: CacheComponent = rootData ?
+            rootData[matchedIndex][instancesKey] :
+            {
+              data: {},
+              component: {}
+            }
+          let instances: Vue | undefined = matched.instances[instancesKey]
+          if (instances !== undefined) {
+            const children = instances.$children;
+            (instances.$children as any) = new ChooChildrenArray<Vue>(this.setCreate(matchedData))
+            children.forEach((item: Vue) => {
+              instances!.$children.push(item)
+            })
+            ChooRouter.resetComponentData.call(instances, matchedData, key)
+          } else {
+            Object.defineProperty(matched.instances, instancesKey, {
+              get: () => instances,
+              set: (val?: Vue) => {
+                instances = val
+                if (instances) {
+                  const prototype: any = (instances.$options as any).__proto__
+                  if (!prototype.created) {
+                    prototype.created = []
+                  } else if (!(prototype.created instanceof Array)) {
+                    prototype.created = [prototype.created]
+                  }
+                  prototype.created.splice(0, 0, this.routerCreateHook(matchedData, true));
+                }
+              }
+            })
+          }
+        })
+      })
+      next()
     }
   }
 
@@ -340,15 +339,20 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   private routerCreateHook(cache: CacheComponent, root: boolean = false): () => void {
     const self = this
-    const { opt: { key } } = this
+    const { opt: { key }, route: { direction } } = this
     const _CHOO_ROUTER_CREATE_ = function (this: Vue): void {
       const keys = this.$attrs[key]
-      const cacheFun: (data: {}) => boolean = (this.$options as any).__proto__.cache
-      let cacheStatus: boolean = true
-      if (cacheFun && (root || keys)) {
-        cacheStatus = cacheFun.call(this, cache.data)
-        cacheStatus = cacheStatus !== false
-      }
+      const cacheFun: (data: {} | null) => {} = (this.$options as any).__proto__.cache
+      const hookData: {} = {}
+      Object.assign(
+        hookData,
+        cacheFun ? cacheFun.call(
+          this,
+          root ? ( direction === Direction.back ? cache.data : null) : (
+            direction === Direction.back ? cache.component[keys].data : null
+          )
+        ) : {}
+      )
       this.$nextTick(() => {
         const created: Array<() => void> = (this.$options as any).__proto__.created
         const indexs: number[] = []
@@ -362,13 +366,19 @@ class ChooRouter implements PluginObject<InitOptions> {
         })
       })
       if (root) {
-        Object.assign(Object.keys(this.$data).length ? this.$data : this, cacheStatus ? cache.data : {})
-      } else if (keys && cache && cache.component[keys]) {
-        Object.assign(Object.keys(this.$data).length ? this.$data : this, cacheStatus ? cache.component[keys].data : {})
-      } else {
-        return
+        Object.assign(Object.keys(this.$data).length ? this.$data : this, cache.data, hookData)
+      } else if (keys) {
+        Object.assign(
+          Object.keys(this.$data).length ? this.$data : this,
+          cache.component[keys] ? cache.component[keys].data : {},
+          hookData
+        )
       }
-      (this.$children as any) = new ChooChildrenArray<Vue>(self.setCreate(root ? cache : cache.component[keys]))
+      (this.$children as any) = new ChooChildrenArray<Vue>(
+        self.setCreate(
+          root ? cache : cache.component[keys] || { data: {}, component: {} }
+        )
+      )
     }
     _CHOO_ROUTER_CREATE_.names = '_CHOO_ROUTER_CREATE_'
     return _CHOO_ROUTER_CREATE_
