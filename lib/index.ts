@@ -59,7 +59,7 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   private keyList: string[] = []
   private data: any = {}
-  private route: any = ChooRoute
+  private route: ChooRoute = new ChooRoute()
 
   public getCache (): {} {
     return this.data
@@ -72,10 +72,9 @@ class ChooRouter implements PluginObject<InitOptions> {
     if (!router) {
       throw(new Error('router 为必要参数'))
     }
-    if (!router) {
+    if (!(router instanceof VueRouter)) {
       throw(new Error('router 必须为 VueRouter 实例'))
     }
-
     this.router = router
     Object.defineProperty(Vue.prototype, '$chooRouter', {
       get: () => this.route.$data
@@ -124,8 +123,7 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   // 创建 routerKey
   private createRouteKey(): NavigationGuard {
-    const self = this
-    const { opt } = self
+    const { opt } = this
     const key: string = opt.key
     return (
       to: Route,
@@ -141,7 +139,7 @@ class ChooRouter implements PluginObject<InitOptions> {
         next({
           path: to.path,
           query: newQuery,
-          replace: one || self.route.replace
+          replace: one || this.route.replace
         })
       } else {
         next()
@@ -151,8 +149,7 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   // 判定方向
   private routerDirection() {
-    const self = this
-    const { opt, keyList, route, data } = self
+    const { opt, keyList, route, data } = this
     const key: string = opt.key
     return (
       to: Route,
@@ -186,8 +183,7 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   // 存储缓存
   private setRouterCache() {
-    const self = this
-    const { opt, route, data } = self
+    const { opt, route, data } = this
     const key: string = opt.key
     return (
       to: Route,
@@ -226,8 +222,7 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   // 读取缓存
   private getRouterCache() {
-    const self = this
-    const { opt, route, data } = self
+    const { opt, route, data } = this
     const key: string = opt.key
     return (
       to: Route,
@@ -251,7 +246,7 @@ class ChooRouter implements PluginObject<InitOptions> {
             let instances: Vue | undefined = matched.instances[instancesKey]
             if (instances !== undefined) {
               const children = instances.$children;
-              (instances.$children as any) = new ChooChildrenArray<Vue>(self.setCreate(matchedData))
+              (instances.$children as any) = new ChooChildrenArray<Vue>(this.setCreate(matchedData))
               children.forEach((item: Vue) => {
                 instances!.$children.push(item)
               })
@@ -259,10 +254,9 @@ class ChooRouter implements PluginObject<InitOptions> {
             } else {
               Object.defineProperty(matched.instances, instancesKey, {
                 get: () => instances,
-                set (val?: Vue) {
+                set: (val?: Vue) => {
                   instances = val
                   if (instances) {
-
                     const prototype: any = (instances.$options as any).__proto__
                     if (!prototype.created) {
                       prototype.created = []
@@ -273,7 +267,7 @@ class ChooRouter implements PluginObject<InitOptions> {
                       prototype.created.splice(0, 1)
                     }
 
-                    prototype.created.splice(0, 0, self.routerCreateHook(matchedData, true));
+                    prototype.created.splice(0, 0, this.routerCreateHook(matchedData, true));
                   }
                 }
               })
@@ -315,7 +309,6 @@ class ChooRouter implements PluginObject<InitOptions> {
   }
 
   private setCreate (data?: CacheComponent): any {
-    const self = this
     const { opt: { key } } = this
     return ({ type }: { type: string }, item?: Vue): void => {
       if (type === 'add') {
@@ -329,14 +322,14 @@ class ChooRouter implements PluginObject<InitOptions> {
           if (prototype.created[0] && prototype.created[0].name === '_CHOO_ROUTER_CREATE_') {
             prototype.created.splice(0, 1)
           }
-          prototype.created.splice(0, 0, self.routerCreateHook(data!))
+          prototype.created.splice(0, 0, this.routerCreateHook(data!))
         } else {
           const children = item!.$children || [];
           const keys = item!.$attrs[key]
           if (!keys || !data!.component[keys]) {
             return
           }
-          (item!.$children as any) = new ChooChildrenArray<Vue>(self.setCreate(data!.component[keys]))
+          (item!.$children as any) = new ChooChildrenArray<Vue>(this.setCreate(data!.component[keys]))
           children.forEach((components: Vue) => {
             item!.$children.push(components)
           })

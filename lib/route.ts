@@ -8,45 +8,19 @@ export enum Direction {
   back = 'back'
 }
 
-// @Component({
-//   data() {
-//     return {
-//       replace: false,
-//       direction: ''
-//     }
-//   }
-// })
-// export default class ChooRoute extends Vue {
-//   public replace!: boolean
-//   public direction!: Direction
-//   public render (h: any) {
-//     return h('template')
-//   }
-// }
+export default class ChooRoute extends Vue {
 
-// export default class ChooRoute extends Vue {
-
-//   public replace!: boolean
-//   public direction!: Direction
-
-//   public data: {replace: boolean, direction: Direction | string} = {
-//     replace: false,
-//     direction: ''
-//   }
-// }
-
-export default new Vue({
-  data: {
+  private static data: {replace: boolean, direction: Direction | string} = {
     replace: false,
     direction: ''
   }
-})
 
-// export default {
-//   data () {
-//     return {
-//       replace: false,
-//       direction: ''
-//     }
-//   }
-// }
+  public replace!: boolean
+  public direction!: Direction
+
+  constructor () {
+    super({
+      data: ChooRoute.data
+    })
+  }
+}
