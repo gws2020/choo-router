@@ -1,3 +1,3 @@
-import chooRouter from '../bin/index'
+import chooRouter from '../lib/index'
 
 export default chooRouter

@@ -77,7 +77,6 @@ class ChooRouter implements PluginObject<InitOptions> {
     }
 
     this.router = router
-    console.log(this.route.$data, '====this.route.$data')
     Object.defineProperty(Vue.prototype, '$chooRouter', {
       get: () => this.route.$data
     })

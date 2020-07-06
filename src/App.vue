@@ -11,31 +11,13 @@
 </template>
 
 <script>
-import chooRouter from 'choo-router'
+import chooRouter from '..'
 export default {
   data() {
     return {
       replace: false
     }
   },
-  created () {
-    console.log(this)
-  },
-  watch: {
-    // '$chooRouter.direction': {
-    //   immediate: true,
-    //   handler (v) {
-    //     console.log(v, '=====direction')
-    //   }
-    // },
-    '$route': {
-      deep: true,
-      immediate: true,
-      handler () {
-        console.log(this, '===444')
-      }
-    }
-  }
 }
 </script>
 
