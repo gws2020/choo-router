@@ -10,7 +10,7 @@ export enum Direction {
 
 export default class ChooRoute extends Vue {
 
-  private static data: {replace: boolean, direction: Direction | string} = {
+  private static initData: {replace: boolean, direction: Direction | string} = {
     replace: false,
     direction: ''
   }
@@ -20,7 +20,7 @@ export default class ChooRoute extends Vue {
 
   constructor () {
     super({
-      data: ChooRoute.data
+      data: ChooRoute.initData
     })
   }
 }
