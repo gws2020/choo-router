@@ -1,19 +1,19 @@
 {
   "name": "choo-router",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": false,
   "description": "## Project setup ``` yarn install ```",
   "main": "dist/index.js",
   "typings": "types/index.d.ts",
   "files": [
-    "bin",
+    "lib",
     "dist",
     "types"
   ],
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
-    "build": "webpack --env.entry=./bin/index.ts --config webpack.conf.js"
+    "build": "webpack --env.entry=./lib/index.ts --config webpack.conf.js"
   },
   "repository": {
     "type": "git",
@@ -32,8 +32,9 @@
   },
   "homepage": "https://github.com/gws267/choo-router#readme",
   "dependencies": {
-    "core-js": "^3.6.5",
+    "choo-router": "^1.0.0",
     "clean-webpack-plugin": "^3.0.0",
+    "core-js": "^3.6.5",
     "string-random": "^0.1.3",
     "vue": "^2.6.11",
     "vue-class-component": "^7.2.3",
