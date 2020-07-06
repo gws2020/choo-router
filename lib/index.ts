@@ -270,7 +270,11 @@ class ChooRouter implements PluginObject<InitOptions> {
             }
           })
         })
+        next()
       } else {
+        if (to.path === from.path) {
+          return next()
+        }
         to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
           const instancesList: string[] = Object.keys(matched.instances)
           const instances: {[key: string]: Vue} = matched.instances
@@ -292,7 +296,6 @@ class ChooRouter implements PluginObject<InitOptions> {
         })
         next()
       }
-      next()
     }
   }
 
