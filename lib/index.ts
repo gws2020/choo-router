@@ -34,17 +34,20 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   private static resetComponentData(this: Vue, data: CacheComponent, key: string) {
     const dataFun: () => void = (this.$options as any).__proto__.data
-    const cacheFun: (data: {}) => {} | any = (this.$options as any).__proto__.cache
+    const cacheFun: (data: {} | null) => {} | any = (this.$options as any).__proto__.cache
     const keys: string | undefined = key ? this.$attrs[key] : key
     const hookData: {} = {}
-
+    let cacheData: {} | null = data
+    if (example.route.direction !== Direction.back) {
+      cacheData = null
+    }
     Object.assign(
       Object.keys(this.$data).length ? this.$data : this,
       hookData,
       dataFun ? dataFun.call(this) : {},
       cacheFun ? (
-        cacheFun.call(this, data.data) || data.data
-      ) : data.data
+        cacheFun.call(this, cacheData) || cacheData
+      ) : cacheData
     )
 
     this.$children.forEach((components: Vue) => {
@@ -208,19 +211,19 @@ class ChooRouter implements PluginObject<InitOptions> {
             }
             ChooRouter.setComponentCache(matchedData[instancesKey], instances, key)
 
-            if ( to.path === from.path ) {
-              ChooRouter.resetComponentData.call(instances, {data: {}, component: {}}, key)
-            }
+            // if ( to.path === from.path ) {
+            //   ChooRouter.resetComponentData.call(instances, {data: {}, component: {}}, key)
+            // }
           }
         })
-      } else if (route.replace && to.path === from.path) {
-        from.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
-          const matchedKey: string[] = Object.keys(matched.instances)
-          for (const instancesKey of matchedKey) {
-            const instances: Vue = matched.instances[instancesKey]
-            ChooRouter.resetComponentData.call(instances, {data: {}, component: {}}, key)
-          }
-        })
+      // } else if (route.replace && to.path === from.path) {
+      //   from.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
+      //     const matchedKey: string[] = Object.keys(matched.instances)
+      //     for (const instancesKey of matchedKey) {
+      //       const instances: Vue = matched.instances[instancesKey]
+      //       ChooRouter.resetComponentData.call(instances, {data: {}, component: {}}, key)
+      //     }
+      //   })
       }
 
       next()

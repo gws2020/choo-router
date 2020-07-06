@@ -23,6 +23,10 @@ export default {
       count: 0
     }
   },
+  cache (data) {
+    console.log('=====', data)
+    return {}
+  },
   created() {
     // console.log(this, '====333')
   },

@@ -11,23 +11,23 @@
 </template>
 
 <script>
-import chooRouter from '..'
+import chooRouter from '../lib'
 export default {
   data() {
     return {
       replace: false
     }
   },
-  watch: {
-    $route: {
-      immediate: true,
-      deep: true,
-      handler () {
-        const {replace, direction} = this.$chooRouter
-        console.log(`replace: ${replace}, direction: ${direction}`, chooRouter.getCache())
-      }
-    }
-  }
+  // watch: {
+  //   $route: {
+  //     immediate: true,
+  //     deep: true,
+  //     handler () {
+  //       const {replace, direction} = this.$chooRouter
+  //       console.log(`replace: ${replace}, direction: ${direction}`, chooRouter.getCache())
+  //     }
+  //   }
+  // }
 }
 </script>
 

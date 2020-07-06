@@ -7,10 +7,11 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator'
 @Component({
-  cache: (data: {[key: string]: any} | null) => {
+  cache (data: {[key: string]: any} | null) {
     return {}
   }
 })
 export default class About extends Vue {
+  public a: string = '1'
 }
 </script>
