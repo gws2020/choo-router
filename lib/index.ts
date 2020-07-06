@@ -335,7 +335,7 @@ class ChooRouter implements PluginObject<InitOptions> {
   private routerCreateHook(cache: CacheComponent, root: boolean = false): () => void {
     const self = this
     const { opt: { key } } = this
-    const _CHOO_ROUTER_CREATE_ = function (this: Vue): void {
+    const _CHOO_ROUTER_CREATE_ = async function (this: Vue): Promise<any> {
       const keys = this.$attrs[key];
       this.$nextTick(() => {
         const created = (this.$options as any).__proto__.created
@@ -349,6 +349,7 @@ class ChooRouter implements PluginObject<InitOptions> {
           created.splice(index, 1)
         })
       })
+      let hookData: {}
       if (root) {
         Object.assign(Object.keys(this.$data).length ? this.$data : this, cache.data)
       } else if (keys && cache && cache.component[keys]) {
