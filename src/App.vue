@@ -22,13 +22,13 @@ export default {
     console.log(this)
   },
   watch: {
-    "$chooRouter.direction": {
+    '$chooRouter.direction': {
       immediate: true,
       handler (v) {
         console.log(v, '=====direction')
       }
     },
-    "$route": {
+    '$route': {
       deep: true,
       immediate: true,
       handler () {

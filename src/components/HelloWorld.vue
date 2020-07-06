@@ -42,8 +42,6 @@ import HelloWorldCopy from './HelloWorldCcopy.vue'
   components: {
     HelloWorldCopy,
     abc: {
-      updated () {
-      },
       components: {
         BBB: {
           data() {
@@ -51,7 +49,7 @@ import HelloWorldCopy from './HelloWorldCcopy.vue'
               ccc: 'ccc'
             }
           },
-          render(h) {
+          render(h: any) {
             return h(
               'p',
               {},
@@ -62,21 +60,16 @@ import HelloWorldCopy from './HelloWorldCcopy.vue'
           }
         }
       },
-      render(h) {
+      render(h: any) {
         return h('p', {}, ['3333', h('BBB', {attrs: {crk: 'ddss'}})])
       }
     }
   }
 })
 export default class HelloWorld extends Vue {
+  public d: string = 'ddddsssss'
+  public ddd: string = 'bbbb'
   @Prop() private msg!: string
-
-  d: string = 'ddddsssss'
-  ddd: string = 'bbbb'
-
-  // created() {
-    // console.log(this, '===========a222223333')
-  // }
 }
 </script>
 
