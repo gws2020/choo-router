@@ -1,10 +1,15 @@
 {
   "name": "choo-router",
   "version": "1.0.0",
-  "private": true,
+  "private": false,
   "description": "## Project setup ``` yarn install ```",
   "main": "dist/index.js",
   "typings": "types/index.d.ts",
+  "files": [
+    "bin",
+    "dist",
+    "types"
+  ],
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
@@ -21,7 +26,7 @@
     "choo-router"
   ],
   "author": "龚文硕",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/gws267/choo-router/issues"
   },
