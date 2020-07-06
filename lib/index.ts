@@ -32,7 +32,7 @@ class ChooRouter implements PluginObject<InitOptions> {
     })
   }
 
-  private static resetComponentData(this: Vue, data: CacheComponent, key: string) {
+  private static resetComponentData(this: Vue, data: CacheComponent, key: string, root: boolean = false) {
     const dataFun: () => void = (this.$options as any).__proto__.data
     const cacheFun: (data: {} | null) => {} | any = (this.$options as any).__proto__.cache
     const keys: string | undefined = key ? this.$attrs[key] : key
@@ -45,9 +45,11 @@ class ChooRouter implements PluginObject<InitOptions> {
       Object.keys(this.$data).length ? this.$data : this,
       hookData,
       dataFun ? dataFun.call(this) : {},
-      cacheFun ? (
-        cacheFun.call(this, cacheData) || cacheData
-      ) : cacheData
+      root || keys ? (
+        cacheFun ? (
+          cacheFun.call(this, cacheData) || cacheData
+        ) : cacheData
+      ) : {}
     )
 
     this.$children.forEach((components: Vue) => {
@@ -280,7 +282,7 @@ class ChooRouter implements PluginObject<InitOptions> {
             children.forEach((item: Vue) => {
               instances!.$children.push(item)
             })
-            ChooRouter.resetComponentData.call(instances, matchedData, key)
+            ChooRouter.resetComponentData.call(instances, matchedData, key, true)
           } else {
             Object.defineProperty(matched.instances, instancesKey, {
               get: () => instances,
@@ -346,7 +348,7 @@ class ChooRouter implements PluginObject<InitOptions> {
       const hookData: {} = {}
       Object.assign(
         hookData,
-        cacheFun ? cacheFun.call(
+        cacheFun && (root || keys) ? cacheFun.call(
           this,
           root ? ( direction === Direction.back ? cache.data : null) : (
             direction === Direction.back ? cache.component[keys].data : null

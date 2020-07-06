@@ -24,7 +24,7 @@ export default {
     }
   },
   cache (data) {
-    console.log('=====', data)
+    console.log('home cache data:', data)
     return {}
   },
   created() {
@@ -33,6 +33,10 @@ export default {
   components: {
     HelloWorld,
     Abc: {
+      cache (data) {
+        console.log('abc=====', data)
+        return {}
+      },
       components: {
         BBB: {
           data() {

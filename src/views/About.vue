@@ -8,6 +8,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator'
 @Component({
   cache (data: {[key: string]: any} | null) {
+    console.log('about cache data:', data)
     return {}
   }
 })
