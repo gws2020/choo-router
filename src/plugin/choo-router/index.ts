@@ -278,7 +278,7 @@ class ChooRouter implements PluginObject<InitOptions> {
     return function ({ type }: { type: string }, item?: Vue): void {
       if (type === 'add') {
         if (!item!.$el) {
-          (item!.$children as any) = new ChooChildrenArray<Vue>(self.setCreate(data!))
+          // (item!.$children as any) = new ChooChildrenArray<Vue>(self.setCreate(data!))
           const prototype: any = (item!.$options as any).__proto__
           if (!prototype.created) {
             prototype.created = []
@@ -290,11 +290,11 @@ class ChooRouter implements PluginObject<InitOptions> {
           }
           prototype.created.splice(0, 0, self.routerCreateHook(data!))
         } else {
+          const children = item!.$children || [];
           const keys = item!.$attrs[key]
           if (!keys || !(data!.component as any)[keys]) {
             return
           }
-          const children = item!.$children || [];
           (item!.$children as any) = new ChooChildrenArray<Vue>(self.setCreate((data!.component as any)[keys]))
           children.forEach((component: Vue) => {
             item!.$children.push(component)
@@ -316,14 +316,8 @@ class ChooRouter implements PluginObject<InitOptions> {
       } else {
         return
       }
-      if (one) {
-        console.log(this)
-      }
+      console.log('====555====', this);
       (this.$children as any) = new ChooChildrenArray<Vue>(self.setCreate(one ? cache : (cache.component as any)[keys]))
-      // if (!one && cache.component) {
-      //   Object.assign(Object.keys(this.$data).length ? this.$data : this, (cache.component as any)[keys].data)
-      // }
-      // (this.$children as any) = new ChooChildrenArray(self.setCreate((cache.component as any)[keys]))
     }
   }
 
