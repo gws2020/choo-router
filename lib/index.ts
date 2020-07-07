@@ -121,6 +121,8 @@ class ChooRouter implements PluginObject<InitOptions> {
 
     router.beforeEach(this.getRouterCache())
 
+    router.afterEach(this.recoveryAllChildrenArray())
+
     router.afterEach(this.endRouter())
   }
 
@@ -210,20 +212,8 @@ class ChooRouter implements PluginObject<InitOptions> {
               component: {}
             }
             ChooRouter.setComponentCache(matchedData[instancesKey], instances, key)
-
-            // if ( to.path === from.path ) {
-            //   ChooRouter.resetComponentData.call(instances, {data: {}, component: {}}, key)
-            // }
           }
         })
-      // } else if (route.replace && to.path === from.path) {
-      //   from.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
-      //     const matchedKey: string[] = Object.keys(matched.instances)
-      //     for (const instancesKey of matchedKey) {
-      //       const instances: Vue = matched.instances[instancesKey]
-      //       ChooRouter.resetComponentData.call(instances, {data: {}, component: {}}, key)
-      //     }
-      //   })
       }
 
       next()
@@ -239,32 +229,11 @@ class ChooRouter implements PluginObject<InitOptions> {
       from: Route,
       next: NavigationGuardNext
     ): void => {
-      // const { direction } = route
+
       const query: { [ key: string ]: any } = to.query
       const keys: string = query[key]
       const rootData = data[keys]
-      // if (direction !== Direction.back) {
-      to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
-        const instancesList: string[] = Object.keys(matched.components)
-        const instances: {[key: string]: Vue} = matched.instances
-        matched.instances = {}
-        instancesList.forEach((instancesKey: string) => {
-          matched.instances[instancesKey] = instances[instancesKey];
-        });
-      })
 
-      from.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
-        const instancesList: string[] = Object.keys(matched.components)
-        instancesList.forEach((instancesKey: string) => {
-          const children = matched.instances[instancesKey].$children;
-          (matched.instances[instancesKey].$children as Vue[]) = []
-          children.forEach((components: Vue) => {
-            matched.instances[instancesKey].$children.push(components)
-          })
-        });
-      })
-      // }
-      
       to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
         const instancesList: string[] = Object.keys(matched.components)
         instancesList.forEach((instancesKey: string) => {
@@ -305,10 +274,38 @@ class ChooRouter implements PluginObject<InitOptions> {
     }
   }
 
+  private recoveryAllChildrenArray() {
+    return (
+      to: Route,
+      from: Route,
+    ): void => {
+      Vue.nextTick(() => {
+        to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
+          const instances: {[key: string]: Vue} = matched.instances
+          const instancesList: string[] = Object.keys(matched.components)
+          matched.instances = {}
+          instancesList.forEach((instancesKey: string) => {
+            matched.instances[instancesKey] = instances[instancesKey]
+            this.recoveryComponentChildrenArray(instances[instancesKey])
+          });
+        })
+      })
+    }
+  }
+
   private endRouter() {
     return (): void => {
       this.route.replace = false
     }
+  }
+
+  private recoveryComponentChildrenArray(component: Vue) {
+    const children: Vue[] = component.$children;
+    (component.$children as any) = []
+    children.forEach((components: Vue) => {
+      component.$children.push(components)
+      this.recoveryComponentChildrenArray(components)
+    })
   }
 
   private setCreate (data?: CacheComponent): any {
@@ -350,21 +347,18 @@ class ChooRouter implements PluginObject<InitOptions> {
         cacheFun ? cacheFun.call(
           this,
           root ? ( direction === Direction.back ? cache.data : null) : (
-            direction === Direction.back ? (cache.component[keys] ? cache.component[keys].data : (keys ? {} : null)) : null
+            direction === Direction.back ? (
+              cache.component[keys] ? cache.component[keys].data : (keys ? {} : null)
+            ) : null
           )
         ) : {}
       )
       this.$nextTick(() => {
         const created: Array<() => void> = (this.$options as any).__proto__.created
-        const indexs: number[] = []
-        created.forEach((fun: () => void, index: number) => {
-          if ((fun as any).names === '_CHOO_ROUTER_CREATE_') {
-            indexs.splice(0, 0, index)
-          }
-        })
-        indexs.forEach((index: number) => {
+        const index = created.indexOf(_CHOO_ROUTER_CREATE_)
+        if (index >= 0) {
           created.splice(index, 1)
-        })
+        }
       })
       if (root) {
         Object.assign(Object.keys(this.$data).length ? this.$data : this, cache.data, hookData)
@@ -381,7 +375,6 @@ class ChooRouter implements PluginObject<InitOptions> {
         )
       )
     }
-    _CHOO_ROUTER_CREATE_.names = '_CHOO_ROUTER_CREATE_'
     return _CHOO_ROUTER_CREATE_
   }
 
