@@ -1,6 +1,6 @@
 {
   "name": "choo-router",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "private": false,
   "description": "## Project setup ``` yarn install ```",
   "main": "dist/index.js",
