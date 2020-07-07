@@ -13,7 +13,8 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "lint": "vue-cli-service lint",
-    "build": "webpack --env.entry=./lib/index.ts --config webpack.conf.js"
+    "build": "vue-cli-service build",
+    "lib": "webpack --env.entry=./lib/index.ts --config webpack.conf.js"
   },
   "repository": {
     "type": "git",
