@@ -1,13 +1,8 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <p>{{count}}</p>
-    <p>
-      <button @click="() => {count ++}">add</button>
-    </p>
-    <HelloWorld :crk="a" msg="Welcome to Your Vue.js App">
-      <Abc crk="aadddccc"></Abc>
-    </HelloWorld>
+    <HelloWorld :crk="a" msg="Welcome to Your Vue.js App" />
+    <HelloWorld :crk="b" msg="Welcome to Your Vue.js App" />
   </div>
 </template>
 
@@ -20,6 +15,7 @@ export default {
   data() {
     return {
       a: 'a321321',
+      b: 'b321321',
       count: 0
     }
   },

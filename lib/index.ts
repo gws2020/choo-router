@@ -35,7 +35,7 @@ class ChooRouter implements PluginObject<InitOptions> {
   private static resetComponentData(this: Vue, data: CacheComponent, key: string, root: boolean = false) {
     const dataFun: () => void = (this.$options as any).__proto__.data
     const cacheFun: (data: {} | null) => {} | any = (this.$options as any).__proto__.cache
-    const keys: string | undefined = key ? this.$attrs[key] : key
+    const keys: string = this.$attrs[key]
     let cacheData: {} | null = data.data
     if (example.route.direction !== Direction.back) {
       cacheData = null
@@ -50,9 +50,8 @@ class ChooRouter implements PluginObject<InitOptions> {
     )
 
     this.$children.forEach((components: Vue) => {
-      const componentKeys: string | undefined = key ? components.$attrs[key] : key
-      let componentData: CacheComponent | undefined
-      componentData = data.component[componentKeys]
+      const componentKeys: string = components.$attrs[key]
+      const componentData: CacheComponent = data.component[componentKeys]
       ChooRouter.resetComponentData.call(components, componentData || { data: {}, component: {} }, key)
     })
   }
@@ -62,6 +61,7 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   private keyList: string[] = []
   private data: any = {}
+  private replace: boolean = false
   private route: ChooRoute = new ChooRoute()
 
   public getCache (): {} {
@@ -103,7 +103,7 @@ class ChooRouter implements PluginObject<InitOptions> {
       onComplete?: () => void,
       onAbort?: (err: Error) => void
     ) {
-      self.route.replace = true
+      self.replace = true
       return oldReplace.call(this, location, onComplete, onAbort)
     }
 
@@ -144,7 +144,7 @@ class ChooRouter implements PluginObject<InitOptions> {
         next({
           path: to.path,
           query: newQuery,
-          replace: root || this.route.replace
+          replace: root || this.replace
         })
       } else {
         next()
@@ -182,6 +182,7 @@ class ChooRouter implements PluginObject<InitOptions> {
           keyList.push(toKeys)
         }
       }
+      this.route.replace = this.replace
       next()
     }
   }
@@ -295,7 +296,7 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   private endRouter() {
     return (): void => {
-      this.route.replace = false
+      this.replace = false
     }
   }
 

@@ -18,16 +18,16 @@ export default {
       replace: false
     }
   },
-  // watch: {
-  //   $route: {
-  //     immediate: true,
-  //     deep: true,
-  //     handler () {
-  //       const {replace, direction} = this.$chooRouter
-  //       console.log(`replace: ${replace}, direction: ${direction}`, chooRouter.getCache())
-  //     }
-  //   }
-  // }
+  watch: {
+    $chooRouter: {
+      immediate: true,
+      deep: true,
+      handler () {
+        const {replace, direction} = this.$chooRouter
+        console.log(`replace: ${replace}, direction: ${direction}`)
+      }
+    }
+  }
 }
 </script>
 
