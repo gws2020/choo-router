@@ -6,7 +6,7 @@
       <button @click="() => {count ++}">add</button>
     </p>
     <HelloWorld :crk="a" msg="Welcome to Your Vue.js App">
-      <Abc :crk="'d321'"></Abc>
+      <Abc crk="aadddccc"></Abc>
     </HelloWorld>
   </div>
 </template>

@@ -39,6 +39,10 @@ import v from 'vue'
 import HelloWorldCopy from './HelloWorldCcopy.vue'
 
 @Component({
+  cache(data) {
+    console.log('hhh---', data)
+    return {}
+  },
   components: {
     HelloWorldCopy,
     abc: {

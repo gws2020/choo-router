@@ -44,16 +44,15 @@ class ChooRouter implements PluginObject<InitOptions> {
       Object.keys(this.$data).length ? this.$data : this,
       dataFun ? dataFun.call(this) : {},
       cacheData || {},
-      root || keys ? (
-        cacheFun ? (
-          cacheFun.call(this, cacheData) || cacheData
-        ) : cacheData
-      ) : {}
+      cacheFun ? (
+        cacheFun.call(this, root || keys ? cacheData : null) || cacheData
+      ) : cacheData
     )
 
     this.$children.forEach((components: Vue) => {
+      const componentKeys: string | undefined = key ? components.$attrs[key] : key
       let componentData: CacheComponent | undefined
-      componentData = data.component[keys]
+      componentData = data.component[componentKeys]
       ChooRouter.resetComponentData.call(components, componentData || { data: {}, component: {} }, key)
     })
   }
@@ -240,31 +239,32 @@ class ChooRouter implements PluginObject<InitOptions> {
       from: Route,
       next: NavigationGuardNext
     ): void => {
-      const { direction } = route
-      if (direction !== Direction.back) {
-        to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
-          const instancesList: string[] = Object.keys(matched.components)
-          const instances: {[key: string]: Vue} = matched.instances
-          matched.instances = {}
-          instancesList.forEach((instancesKey: string) => {
-            matched.instances[instancesKey] = instances[instancesKey];
-          });
-        })
-
-        from.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
-          const instancesList: string[] = Object.keys(matched.components)
-          instancesList.forEach((instancesKey: string) => {
-            const children = matched.instances[instancesKey].$children;
-            (matched.instances[instancesKey].$children as Vue[]) = []
-            children.forEach((components: Vue) => {
-              matched.instances[instancesKey].$children.push(components)
-            })
-          });
-        })
-      }
+      // const { direction } = route
       const query: { [ key: string ]: any } = to.query
       const keys: string = query[key]
       const rootData = data[keys]
+      // if (direction !== Direction.back) {
+      to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
+        const instancesList: string[] = Object.keys(matched.components)
+        const instances: {[key: string]: Vue} = matched.instances
+        matched.instances = {}
+        instancesList.forEach((instancesKey: string) => {
+          matched.instances[instancesKey] = instances[instancesKey];
+        });
+      })
+
+      from.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
+        const instancesList: string[] = Object.keys(matched.components)
+        instancesList.forEach((instancesKey: string) => {
+          const children = matched.instances[instancesKey].$children;
+          (matched.instances[instancesKey].$children as Vue[]) = []
+          children.forEach((components: Vue) => {
+            matched.instances[instancesKey].$children.push(components)
+          })
+        });
+      })
+      // }
+      
       to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
         const instancesList: string[] = Object.keys(matched.components)
         instancesList.forEach((instancesKey: string) => {
@@ -347,10 +347,10 @@ class ChooRouter implements PluginObject<InitOptions> {
       const hookData: {} = {}
       Object.assign(
         hookData,
-        cacheFun && (root || keys) ? cacheFun.call(
+        cacheFun ? cacheFun.call(
           this,
           root ? ( direction === Direction.back ? cache.data : null) : (
-            direction === Direction.back ? cache.component[keys].data : null
+            direction === Direction.back ? (cache.component[keys] ? cache.component[keys].data : (keys ? {} : null)) : null
           )
         ) : {}
       )
