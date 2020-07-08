@@ -32,7 +32,7 @@ class ChooRouter implements PluginObject<InitOptions> {
     })
   }
 
-  private static resetComponentData(this: Vue, data: CacheComponent, key: string, root: boolean = false) {
+  private static resetComponentData(this: Vue, data: CacheComponent, key: string, root: boolean = false): void {
     const dataFun: () => void = (this.$options as any).__proto__.data
     const cacheFun: (data: {} | null) => {} | any = (this.$options as any).__proto__.cache
     const keys: string = this.$attrs[key]
@@ -89,7 +89,7 @@ class ChooRouter implements PluginObject<InitOptions> {
   }
 
   // 重写 router.replace
-  private resetReplace() {
+  private resetReplace(): void {
     const self: ChooRouter = this
     const { router } = this
     const oldReplace = router.replace
@@ -110,7 +110,7 @@ class ChooRouter implements PluginObject<InitOptions> {
     router.replace = (newReplace as any)
   }
 
-  private initRouter() {
+  private initRouter(): void {
     const { router } = this
 
     router.beforeEach(this.createRouteKey())
@@ -153,7 +153,7 @@ class ChooRouter implements PluginObject<InitOptions> {
   }
 
   // 判定方向
-  private routerDirection() {
+  private routerDirection(): NavigationGuard {
     const { opt, keyList, route, data } = this
     const key: string = opt.key
     return (
@@ -188,7 +188,7 @@ class ChooRouter implements PluginObject<InitOptions> {
   }
 
   // 存储缓存
-  private setRouterCache() {
+  private setRouterCache(): NavigationGuard {
     const { opt, route, data } = this
     const key: string = opt.key
     return (
@@ -216,13 +216,12 @@ class ChooRouter implements PluginObject<InitOptions> {
           }
         })
       }
-
       next()
     }
   }
 
   // 读取缓存
-  private getRouterCache() {
+  private getRouterCache(): NavigationGuard {
     const { opt, route, data } = this
     const key: string = opt.key
     return (
@@ -275,12 +274,12 @@ class ChooRouter implements PluginObject<InitOptions> {
     }
   }
 
-  private recoveryAllChildrenArray() {
+  private recoveryAllChildrenArray(): (to: Route, from: Route) => any {
     return (
       to: Route,
-      from: Route,
+      from: Route
     ): void => {
-      Vue.nextTick(() => {
+      Vue.nextTick((): any => {
         to.matched.forEach((matched: RouteRecord, matchedIndex: number) => {
           const instances: {[key: string]: Vue} = matched.instances
           const instancesList: string[] = Object.keys(matched.components)
@@ -294,13 +293,13 @@ class ChooRouter implements PluginObject<InitOptions> {
     }
   }
 
-  private endRouter() {
+  private endRouter(): (to: Route, from: Route) => any {
     return (): void => {
       this.replace = false
     }
   }
 
-  private recoveryComponentChildrenArray(component: Vue) {
+  private recoveryComponentChildrenArray(component: Vue): void {
     const children: Vue[] = component.$children;
     (component.$children as any) = []
     children.forEach((components: Vue) => {
@@ -309,7 +308,7 @@ class ChooRouter implements PluginObject<InitOptions> {
     })
   }
 
-  private setCreate (data?: CacheComponent): any {
+  private setCreate (data?: CacheComponent): ({ type }: { type: string }, item?: Vue) => void {
     const { opt: { key } } = this
     return ({ type }: { type: string }, item?: Vue): void => {
       if (type === 'add') {
@@ -336,10 +335,10 @@ class ChooRouter implements PluginObject<InitOptions> {
     }
   }
 
-  private routerCreateHook(cache: CacheComponent, root: boolean = false): () => void {
+  private routerCreateHook(cache: CacheComponent, root: boolean = false): (this: Vue) => void {
     const self = this
     const { opt: { key }, route: { direction } } = this
-    const _CHOO_ROUTER_CREATE_ = function (this: Vue): void {
+    const _CHOO_ROUTER_CREATE_: (this: Vue) => void = function (this: Vue): void {
       const keys = this.$attrs[key]
       const cacheFun: (data: {} | null) => {} = (this.$options as any).__proto__.cache
       const hookData: {} = {}
