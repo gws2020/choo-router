@@ -4,7 +4,7 @@ import VueRouter, { Route, NavigationGuardNext, RouteRecord, RawLocation, Naviga
 import ChooRoute, { Direction } from './route'
 
 class InitOptions {
-  public router!: VueRouter
+  public router!: any
   public key!: string
 }
 
@@ -68,9 +68,14 @@ class ChooRouter implements PluginObject<InitOptions> {
     return this.data
   }
 
-  public install: PluginFunction<InitOptions> = (vue: typeof Vue, options?: InitOptions): void => {
+  public install: PluginFunction<InitOptions> = (
+    vue: typeof Vue,
+    options: InitOptions = {
+      router: null,
+      key: 'crk'
+    }
+  ): void => {
     this.opt = options as InitOptions
-    this.opt.key = this.opt.key || 'crk'
     const router: VueRouter = this.opt.router
     if (!router) {
       throw(new Error('router 为必要参数'))
