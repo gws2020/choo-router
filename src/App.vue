@@ -1,12 +1,12 @@
 <template>
   <div id="app">
     <div id="nav">
-      <router-link to="/" :replace="false">Home</router-link> |
+      <router-link to="/a" :replace="false">Home</router-link> |
       <router-link to="/about" v-if="replace" :replace="true">About replace: {{replace}}</router-link>
       <router-link to="/about" v-if="!replace" :replace="false">About replace: {{replace}}</router-link>
       <button @click="replace = !replace">切换</button>
     </div>
-    <router-view/>
+    <choo-router-view />
   </div>
 </template>
 
@@ -23,8 +23,7 @@ export default {
       immediate: true,
       deep: true,
       handler () {
-        const {replace, direction} = this.$chooRouter;
-        console.log(`replace: ${replace}, direction: ${direction}`);
+        // const {replace, direction} = this.$chooRouter;
       }
     }
   }

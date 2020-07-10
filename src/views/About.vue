@@ -14,5 +14,8 @@ import { Component, Prop, Vue } from 'vue-property-decorator'
 })
 export default class About extends Vue {
   public a: string = '1'
+  public created () {
+    console.log('===444555')
+  }
 }
 </script>

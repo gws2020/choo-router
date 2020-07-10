@@ -1,8 +1,7 @@
 <template>
   <div class="home">
     <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld :crk="a" msg="Welcome to Your Vue.js App" />
-    <HelloWorld :crk="b" msg="Welcome to Your Vue.js App" />
+    <choo-router-view />
   </div>
 </template>
 
@@ -12,6 +11,12 @@ import HelloWorld from '@/components/HelloWorld.vue'
 
 export default {
   name: 'Home',
+  props: {
+    ddd: {
+      type: String,
+      default: ''
+    }
+  },
   data() {
     return {
       a: 'a321321',
@@ -20,17 +25,16 @@ export default {
     }
   },
   cache (data) {
-    console.log('home cache data:', data)
+    console.log(this, '===data')
     return {}
   },
   created() {
-    // console.log(this, '====333')
+    console.log('===444')
   },
   components: {
     HelloWorld,
     Abc: {
       cache (data) {
-        console.log('abc=====', data)
         return {}
       },
       components: {

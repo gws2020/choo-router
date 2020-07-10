@@ -8,6 +8,13 @@ const routes: RouteConfig[] = [
   {
     path: '/',
     component: Home,
+    children: [
+      {
+        path: '/a',
+        // component: Home,
+        component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+      }
+    ]
   },
   {
     path: '/about',
