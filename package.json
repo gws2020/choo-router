@@ -26,12 +26,12 @@
     "choo",
     "choo-router"
   ],
-  "author": "龚文硕",
+  "author": "Wenshuo Gong",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gws267/choo-router/issues"
+    "url": "https://github.com/gws2020/choo-router/issues"
   },
-  "homepage": "https://github.com/gws267/choo-router#readme",
+  "homepage": "https://github.com/gws2020/choo-router#readme",
   "dependencies": {
     "core-js": "^3.6.5",
     "string-random": "^0.1.3",
