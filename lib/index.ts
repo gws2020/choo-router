@@ -40,7 +40,7 @@ class ChooRouter implements PluginObject<InitOptions> {
   }
 
   private static getMatchedModel(matchedList: RouteRecord[]): MatchedModel {
-    const model: Array<{[key: string]: Vue | undefined}> = []
+    const model: InstancesModel[] = []
     matchedList.forEach((matched: RouteRecord, index: number) => {
       const keyList: string[] = Object.keys(matched.components)
       const instancesModel: InstancesModel = model[index] = {}
@@ -234,7 +234,7 @@ class ChooRouter implements PluginObject<InitOptions> {
 
   // 读取缓存
   private getRouterCache(): NavigationGuard {
-    const { key, data, route: { direction } } = this
+    const { key, data } = this
     return (
       to: Route,
       from: Route,
@@ -257,7 +257,7 @@ class ChooRouter implements PluginObject<InitOptions> {
             get: () => instances,
             set: (val: Vue) => {
               instances = val
-              const prototype: any = (val.$options as any).__proto__
+              const prototype: any = Object.getPrototypeOf(val.$options)
               if (!val.$el) {
                 if (!prototype.created) {
                   prototype.created = []
@@ -365,7 +365,7 @@ class ChooRouter implements PluginObject<InitOptions> {
     return ({ type }: { type: string }, item?: Vue): void => {
       if (type === 'add') {
         if (!item!.$el) {
-          const prototype: any = (item!.$options as any).__proto__
+          const prototype: any = Object.getPrototypeOf(item!.$options)
           if (!prototype.created) {
             prototype.created = []
           } else if (!(prototype.created instanceof Array)) {
@@ -383,7 +383,7 @@ class ChooRouter implements PluginObject<InitOptions> {
     const { key, route: { direction } } = this
     const _CHOO_ROUTER_CREATE_: (this: Vue) => void = function (this: Vue): void {
       const keys = this.$attrs[key]
-      const prototype = (this.$options as any).__proto__
+      const prototype = Object.getPrototypeOf(this.$options)
       const cacheFun: (data: {} | null) => {} = prototype.cache
       const hookData: {
         [key: string]: any

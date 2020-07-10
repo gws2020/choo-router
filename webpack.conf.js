@@ -8,7 +8,7 @@ module.exports = (env) => {
     },
     output: {
       publicPath: './dist',
-      path: path.resolve(__dirname, './dist'),
+      path: path.resolve(__dirname, './bin'),
       filename: '[name].js',
       libraryTarget: 'umd'
     },
