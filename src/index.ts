@@ -147,13 +147,13 @@ class ChooRouter implements PluginObject<InitOptions> {
         const root: boolean = from.name === null
         const newQuery: { [ key: string ]: any } = Object.assign({}, query)
         newQuery[key] = random(6)
-        next({
+        this.router[root || this.replace ? 'replace' : 'push']({
           path: to.path,
-          query: newQuery,
-          replace: root || this.replace
+          query: newQuery
         })
+        return
       } else {
-        next()
+        return next()
       }
     }
   }

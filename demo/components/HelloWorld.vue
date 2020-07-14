@@ -9,14 +9,12 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import v from 'vue'
-import HelloWorldCopy from './HelloWorldCcopy.vue'
 
 @Component({
   cache(data) {
     return {}
   },
   components: {
-    HelloWorldCopy,
     abc: {
       components: {
         BBB: {

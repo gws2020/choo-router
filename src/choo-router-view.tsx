@@ -21,10 +21,10 @@ export default class ChooRouterView extends Vue {
     immediate: true
   })
   private routerPathWatch(path: string = '', oldPath: string = '') {
-    const paths: string = this.key.split('?')[0]
+    const key: string = this.key.split('?')[0]
     path = path.split('?')[0]
     oldPath = oldPath.split('?')[0]
-    if (!paths || paths.indexOf(oldPath) !== -1) {
+    if (!key || key.indexOf(oldPath) !== -1) {
       this.key = path !== oldPath ? this.key : this.$route.fullPath
     }
   }

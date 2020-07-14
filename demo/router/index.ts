@@ -13,6 +13,11 @@ const routes: RouteConfig[] = [
         path: '/a',
         // component: Home,
         component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
+      },
+      {
+        path: '/c',
+        // component: Home,
+        component: () => import(/* webpackChunkName: "about" */ '../views/Test.vue'),
       }
     ]
   },

@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import ChooRouter from '..'
+import ChooRouter from '../src'
 
 Vue.use(ChooRouter, {
   router
