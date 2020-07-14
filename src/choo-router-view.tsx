@@ -14,11 +14,11 @@ export default class ChooRouterView extends Vue {
 
   public render(h: CreateElement): VNode {
     const { attrs, path } = this
-    return h('router-view', {
-      attrs,
-      key: path
-    })
-    // return <router-view attrs={this.attrs} key={this.path}></router-view>
+    // return h('router-view', {
+    //   attrs,
+    //   key: path
+    // })
+    return <router-view attrs={attrs} key={path}></router-view>
   }
 
   @Watch('$route.fullPath', {
