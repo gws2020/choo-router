@@ -5,9 +5,9 @@ module.exports = {
     config
       .entry("app")
       .clear()
-      .add("./demo/main.ts")
+      .add("./example/main.ts")
       .end();
     config.resolve.alias
-      .set("@", path.join(__dirname, "./demo"))
+      .set("@", path.join(__dirname, "./example"))
   }
 };
