@@ -353,6 +353,9 @@ class ChooRouter implements PluginObject<InitOptions> {
   }
 
   private recoveryComponentChildrenArray(component: Vue): void {
+    if (!component) {
+      return
+    }
     const children: Vue[] = component.$children;
     (component.$children as any) = []
     children.forEach((components: Vue) => {
